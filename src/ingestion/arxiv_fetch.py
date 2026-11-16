@@ -45,3 +45,11 @@ def write_manifest(papers):
         writer = csv.DictWriter(f,fieldnames=list(papers[0].keys()))
         writer.writeheader()
         writer.writerows(papers)
+def download_pdf(paper):
+    path = Path(paper["local_path"])
+    if path.exists():
+        return False
+    resp = requests.get(paper["pdf_url"],timeout=60)
+    resp.raise_for_status()
+    path.write_bytes(resp.content)
+    return True
