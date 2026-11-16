@@ -38,3 +38,10 @@ def fetch_listing(category,year,n):
             "local_path":str(RAW_DIRT / f"{arxiv_id}.pdf"),
         })
     return papers    
+
+def write_manifest(papers):
+    MANIFEST.parent.mkdir(parents=True,exist_ok=True)
+    with open(MANIFEST,"w",newline="",encoding="utf-8") as f:
+        writer = csv.DictWriter(f,fieldnames=list(papers[0].keys()))
+        writer.writeheader()
+        writer.writerows(papers)
