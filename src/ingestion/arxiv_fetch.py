@@ -53,3 +53,31 @@ def download_pdf(paper):
     resp.raise_for_status()
     path.write_bytes(resp.content)
     return True
+def main():
+    RAW_DIRT.mkdir(parents=True, exist_ok=True)
+
+    unique = {}
+    for category in CATEGORIES:
+        for year in YEARS:
+            print(f"Listing {category} {year}...")
+            for p in fetch_listing(category, year, PER_GROUP):
+                unique[p["arxiv_id"]] = p
+            time.sleep(DELAY)
+
+    papers = list(unique.values())
+    write_manifest(papers)
+    print(f"Manifest saved: {len(papers)} unique papers")
+
+    for i, paper in enumerate(papers, 1):
+        try:
+            downloaded = download_pdf(paper)
+        except requests.RequestException as err:
+            print(f"[{i}/{len(papers)}] FAILED {paper['arxiv_id']}: {err}")
+            continue
+        if downloaded:
+            print(f"[{i}/{len(papers)}] downloaded {paper['arxiv_id']}")
+            time.sleep(DELAY)
+
+
+if __name__ == "__main__":
+    main()
