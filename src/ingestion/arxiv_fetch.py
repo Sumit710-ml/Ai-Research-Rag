@@ -14,7 +14,7 @@ PER_GROUP = 90
 DELAY = 3 # request rate rule. MANDATORY
 
 def fetch_listing(category,year,n):
-    query = f"cat:{category} AND submitted Date:[{year}01010000 TO {year}12312359]"
+    query = f"cat:{category} AND submittedDate:[{year}01010000 TO {year}12312359]"
     params = {
         "search_query":query,
         "start":0,
