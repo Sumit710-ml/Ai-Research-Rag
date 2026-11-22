@@ -31,3 +31,9 @@ def clone_sparse(repo, patterns):
          f"https://github.com/{repo}.git", str(dest)])
     run(["git", "-C", str(dest), "sparse-checkout", "set", "--no-cone", *patterns])
     return dest
+def get_title(path):
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    for line in text.splitlines():
+        if line.startswith("# "):
+            return line[2:].strip()
+    return path.stem
