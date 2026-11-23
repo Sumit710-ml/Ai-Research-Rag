@@ -37,3 +37,30 @@ def get_title(path):
         if line.startswith("# "):
             return line[2:].strip()
     return path.stem
+def collect(source):
+    repo = source["repo"]
+    repo_dir = clone_sparse(repo, source["sparse"])
+
+    files = [p for p in repo_dir.rglob("*.md")
+             if p.name.lower() != "readme.md" and ".git" not in p.parts]
+    files.sort()
+    if len(files) > source["limit"]:
+        files = random.Random(42).sample(files, source["limit"])
+        files.sort()
+
+    rows = []
+    for path in files:
+        rel = path.relative_to(repo_dir).as_posix()
+        dest = RAW_DIR / source["out"] / rel.replace("/", "__")
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if not dest.exists():
+            shutil.copy(path, dest)
+        rows.append({
+            "doc_id": f"{repo}/{rel}",
+            "title": get_title(path),
+            "source_type": source["type"],
+            "source": repo,
+            "url": f"https://github.com/{repo}/blob/main/{rel}",
+            "local_path": str(dest),
+        })
+    return rows
