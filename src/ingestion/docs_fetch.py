@@ -64,3 +64,21 @@ def collect(source):
             "local_path": str(dest),
         })
     return rows
+def main():
+    all_rows = []
+    for source in SOURCES:
+        print(f"Fetching {source['repo']}...")
+        rows = collect(source)
+        print(f"  -> {len(rows)} documents")
+        all_rows.extend(rows)
+
+    MANIFEST.parent.mkdir(parents=True, exist_ok=True)
+    with open(MANIFEST, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(all_rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(all_rows)
+    print(f"Manifest saved: {len(all_rows)} documents")
+
+
+if __name__ == "__main__":
+    main()
