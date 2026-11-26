@@ -11,3 +11,14 @@ FIELDS = ["doc_id", "title", "source_type", "source", "url",
 def read_csv(path):
     with open(path, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
+def from_arxiv(row):
+    return {
+        "doc_id": f"arxiv:{row['arxiv_id']}",
+        "title": row["title"],
+        "source_type": "paper",
+        "source": "arxiv",
+        "url": f"https://arxiv.org/abs/{row['arxiv_id']}",
+        "local_path": row["local_path"],
+        "file_type": "pdf",
+        "published": row["published"],
+    }
