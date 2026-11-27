@@ -22,3 +22,25 @@ def from_arxiv(row):
         "file_type": "pdf",
         "published": row["published"],
     }
+def from_docs(row):
+    return {**row, "file_type": "md", "published": ""}
+def main():
+    rows = [from_arxiv(r) for r in read_csv(ARXIV_MANIFEST)]
+    rows += [from_docs(r) for r in read_csv(DOCS_MANIFEST)]
+
+    present = [r for r in rows if Path(r["local_path"]).exists()]
+    print(f"{len(present)} of {len(rows)} files exist on disk")
+
+    with open(OUT, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=FIELDS)
+        writer.writeheader()
+        writer.writerows(present)
+
+    counts = {}
+    for r in present:
+        counts[r["source_type"]] = counts.get(r["source_type"], 0) + 1
+    print(counts)
+
+
+if __name__ == "__main__":
+    main()
