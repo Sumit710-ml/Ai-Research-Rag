@@ -4,7 +4,7 @@ A production-style Retrieval-Augmented Generation pipeline over 1,000+ AI docume
 (arXiv papers, framework docs, engineering blogs), with hybrid search, reranking
 and verified citations.
 
-> Status: in progress (Day 2: data ingestion)
+> Status: in progress ( parsing and cleaning)
 
 ## Goals
 - Answer questions about AI research with cited, verifiable sources
@@ -13,6 +13,24 @@ and verified citations.
 
 ## Pipeline
 Ingestion -> Chunking -> Embeddings + BM25 index -> Hybrid search (RRF) -> Reranking -> Cited answers
+
+## Corpus
+| Source | Type | Documents |
+|---|---|---|
+| arXiv (cs.CL, cs.LG, cs.IR, 2023-2025) | PDF papers | X |
+| Hugging Face docs (transformers, diffusers, peft, trl, accelerate, datasets) | Markdown | X |
+| Hugging Face blog | Markdown | X |
+| **Total** | | **X** |
+
+Raw files are not stored in this repo. They are rebuilt by the scripts below.
+
+## How to build the corpus
+    python -m src.ingestion.arxiv_fetch        # arXiv PDFs + manifest
+    python -m src.ingestion.docs_fetch         # framework docs + blog posts
+    python -m src.ingestion.merge_manifests    # unified manifest_all.csv
+
+Downloads respect arXiv's rate limit (one request per 3 seconds) and skip
+files that already exist, so re-running is safe.
 
 ## Roadmap
 - [x] Project skeleton
